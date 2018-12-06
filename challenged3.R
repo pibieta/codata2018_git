@@ -47,7 +47,6 @@ q
 q1 <- q  + scale_fill_brewer(palette = "Dark2")
 q1
 
-# Change the labels of day using scale_x_discrete to Thursday, Friday, Saturday and Sunday.
 q2 <- q1 + scale_x_discrete(labels = c("Fri"= "Friday", "Sat" = "Saturday", 
                                    "Sun"= "Sunday", "Thu" = "Thursday"))
 q2
@@ -55,4 +54,40 @@ q2
 q3 <- q2 + labs(x = "Days", y = "Frequency")
 q3
 
+########################################################
+#################  Activity 2   ########################
+########################################################
 
+data("ChickWeight")
+
+df <- ChickWeight
+
+# Use the dplyr package to identify how many chicks have a complete set of weight 
+# measurements and how many measurements there are in the incomplete cases. 
+head(df)
+# dfna <- df %>% group_by(Chick) %>% summarise(sum(is.na(weight)))
+
+dfa <- df %>% group_by(Chick) %>% summarise(nobs=n())
+
+incomplete <- df %>% group_by(Chick) %>% mutate(nobs=n()) %>% filter(nobs != 12)
+incomplete <- incomplete %>% group_by(Chick) %>% summarise(n())
+incomplete
+
+# Then we observe that there 12 is the total nobs and we select those that have them all
+complete <- df %>% group_by(Chick) %>% mutate(nobs = n()) %>% filter(nobs == 12)
+head(complete)
+dim(complete)
+45 *12
+
+
+# In the complete data set introduce a new variable that measures the current weight difference 
+# compared to day 0. Name this variable weightgain. 
+complete
+complete %>% group_by(Chick) %>% mutate(weightgain = weight )
+df3 <- complete %>% group_by(Chick) %>% spread(Chick, weight) 
+df3
+
+df3 <- complete %>% group_by(Chick) %>% mutate(weightgain = weight - min(weight))
+df3
+df4 <- df3 %>% group_by(Chick) %>% summarize(max(weightgain))
+df4                                             
