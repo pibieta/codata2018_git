@@ -223,3 +223,62 @@ head(iris.new)
 iris.kmeans <- kmeans(iris.new, centers = 3)
 
 plot(iris.new[,c(1,2)], col = iris.kmeans$cluster)
+
+#########################################################
+##################   Challenge  #########################
+#########################################################
+df <- read.csv('event-0005.csv')
+head(df)
+pairs(df[-9])
+unique(df$jet)
+jet.tree <- ctree(df$jet)
+
+train_df <- df[,-c(1,2,8,9)]
+head(train_df)
+unique(df$constituent)
+
+#### k-means seems to work pretty well by looking at confusion matrix
+jet.kmeans <- kmeans(train_df, centers = 3)
+plot(train_df, col = jet.kmeans$cluster)
+pairs(train_df)
+plot(df[3:7], col = df$jet +1)
+summary(jet.kmeans)
+table(-jet.kmeans$cluster)
+table(df$jet)
+cm <- table(df$jet, -jet.kmeans$cluster)
+cm
+head(train_df)
+#### SVM 
+cols <- c('jet','eta','phi','px','py', 'pz')
+jet.svm <- svm(jet ~ ., data=df[,cols], kernel= 'sigmoid')
+plot(jet.svm, df[,cols])
+summary(jet.svm)
+
+
+#### summary
+# aquiring Data
+df <- read.csv('event-0005.csv')
+# Data Visualization
+pairs(df[-9])
+#feature extraction
+train_df <- df[,-c(1,2,8,9)]
+head(train_df)
+# apply k-means
+jet.kmeans <- kmeans(train_df, centers = 3)
+plot(train_df, col = jet.kmeans$cluster)
+pairs(train_df)
+plot(df[3:7], col = df$jet +1)
+# evaluate using the confusion matrix
+cm <- table(df$jet, -jet.kmeans$cluster)
+cm
+
+
+
+## https://www.statmethods.net/advstats/cluster.html
+aggregate(train_df, by = list(jet.kmeans$cluster), FUN = mean)
+new.df <- data.frame(train_df, jet.kmeans$cluster)
+table(-new.df$jet.kmeans.cluster)
+table(df$jet)
+library(cluster)
+clusplot(new.df , jet.kmeans$cluster, color=TRUE, shade=TRUE,
+         labels=2, lines=0)
