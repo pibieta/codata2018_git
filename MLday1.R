@@ -133,3 +133,93 @@ plot(residuals(polypop), x=fitted(polypop)) ### good way to see that the linear 
 
 
 coef(polypop)
+
+################################ Part 3 #############################
+
+###################################
+#### Binary Classification ########
+###################################
+#### a.k.a.  Logistic Regression###
+###################################
+
+# Example: perform logistic regression to relate am = mpg+ wt in the mtcars dataset
+cars.log <- glm(mtcars$am ~ mtcars$mpg + mtcars$wt, family = 'binomial')
+summary(cars.log)
+coef(cars.log)[1]
+# z= ax+ by +c
+a = coef(cars.log)[1]
+b = coef(cars.log)[2]
+c = coef(cars.log)[3]
+
+int.cars <- -(a/c)
+slope.cars <- -(b/c)
+int.cars
+plot(wt ~ mpg, data = mtcars, pch = am)
+abline(a=int.cars, b= slope.cars)
+plot(y = mtcars$mpg, x = mtcars$wt)
+
+#########################################
+######### Decision Trees ##############33
+#########################################
+
+library(party)
+
+tree <- ctree(mpg ~ . , data = mtcars)
+plot(tree)
+### It builds classes of the mpg data and relates them with intervals of the statistically
+### significant variables for mpg, At node 1, there is a split for cars that weigh less 
+### than 2.32 tons and those that weigh more. For the cars that weigh more, we split 
+### further on the engine displacement. For engine displacements that are less than 258 
+### cubic inches in volume, we go to node 4. For engine displacements that have more 
+### than 258 cubic inches, we go to node 5. Notice that for each feature there is a 
+### statistical p-value, which determines how statis‐ tically relevant it is. 
+### The closer the p-value is to 0.05 or greater, the less useful or rele‐ vant it is. 
+### In this case, a p-value of almost exactly 0 is very good. Likewise, you can see how 
+### many data points make up each class at the bottom of the tree.
+
+### it might be worthy to take a look at how this clustering looks
+### like by plotting mpg vs wt and disp
+
+head(iris)
+
+
+iris.tree <- ctree(Species ~ . , data=iris)
+plot(iris.tree)
+unique(iris$Species)
+
+
+
+##############################################
+###### Support Vector Machines  ##############
+##############################################
+### To find dividing hypersurfaces in data
+iris
+library(e1071)
+col <- c("Petal.Length", "Petal.Width", "Species")
+s <- sample(150, 100)
+iris_train <- iris[s, col]
+iris_test <- iris[-s, col]
+summary(iris_train)
+
+plot(iris$Petal.Length, iris$Petal.Width , col= iris$Species)
+### fitting of the model
+
+svmfit <- svm(Species ~ ., data = iris_train, kernel= 'linear')
+plot(svmfit, iris_train[, col])
+
+
+
+
+########################################
+########## K - Means ###################
+########################################
+
+# Drop the label (species) and try to perform clustering
+iris.new <- iris[,c(1,2,3,4)]
+head(iris.new)
+
+?kmeans
+
+iris.kmeans <- kmeans(iris.new, centers = 3)
+
+plot(iris.new[,c(1,2)], col = iris.kmeans$cluster)
