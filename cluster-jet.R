@@ -1,7 +1,10 @@
 ##################################
 ########## Challenge #############
 ##################################
-setwd('~/codata2018_git/')
+setwd('~/Desktop/codata2018_git/')
+# setwd('~/codata2018_git/') # @ HOME
+
+
 
 # Read the dataset on the folder and print the first rows
 df <- read.csv('event-0005.csv')
@@ -19,12 +22,19 @@ pairs(df[-9])
 train_df <- df[,-c(1,2,8,9)]
 head(train_df)
 
+
 # Perform k-means with  3 centers, recall that we saw this in the pairs plot
+
 pairs(train_df)
+### Look for the most relevant features 
+jet.tree <- ctree(df$jet ~ ., data= df)
+plot(jet.tree)
+
+### Perform kmeans
  
 jet.kmeans <- kmeans(train_df, centers = 3)
 plot(train_df, col = jet.kmeans$cluster)
-summary(jet.kmeans)
+# summary(jet.kmeans)
 
 # get cluster means 
 aggregate(train_df,by=list(jet.kmeans$cluster),FUN=mean)

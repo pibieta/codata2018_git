@@ -231,7 +231,9 @@ df <- read.csv('event-0005.csv')
 head(df)
 pairs(df[-9])
 unique(df$jet)
-jet.tree <- ctree(df$jet)
+jet.tree <- ctree(df$jet ~ ., data= df)
+plot(jet.tree)
+
 
 train_df <- df[,-c(1,2,8,9)]
 head(train_df)
@@ -249,10 +251,22 @@ cm <- table(df$jet, -jet.kmeans$cluster)
 cm
 head(train_df)
 #### SVM 
-cols <- c('jet','eta','phi','px','py', 'pz')
-jet.svm <- svm(jet ~ ., data=df[,cols], kernel= 'sigmoid')
-plot(jet.svm, df[,cols])
-summary(jet.svm)
+s <- sample(205, 150)
+#dim(df)
+jet_train <- df[s, cols]
+jet_test <- df[-s, cols]
+cols = c('jet', 'phi', 'eta','pz')
+#cols <- c('jet','eta','phi','px','py', 'pz')
+
+jet_train$jet <- factor(jet_train$jet)
+
+jet.svm <- svm(jet ~ ., data=jet_train, kernel= 'linear')
+plot(jet.svm, jet_train, eta ~ px)
+#print(jet.svm)
+
+prediction <- predict(jet.svm, jet_test)
+table(prediction, jet_test$jet)
+
 
 
 #### summary
